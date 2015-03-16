@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 5.0.0?>
+
+<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage2">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="0.988724235">
+			<storageModule externalCElementFile="0.988724235_org.eclipse.cdt.core.settings" id="0.988724235" name="Default"/>
+			<storageModule externalCElementFile="0.988724235_cdtBuildSystem" version="4.0.0"/>
+			<storageModule externalCElementFile="0.988724235_org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="0.988724235.1082405503">
+			<storageModule externalCElementFile="0.988724235.1082405503_org.eclipse.cdt.core.settings" id="0.988724235.1082405503" name="Mac"/>
+			<storageModule externalCElementFile="0.988724235.1082405503_cdtBuildSystem" version="4.0.0"/>
+			<storageModule externalCElementFile="0.988724235.1082405503_org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="reference_impl.null.1650627259" name="reference_impl"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/example"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="0.988724235">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="0.988724235.1082405503">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+</cproject>
