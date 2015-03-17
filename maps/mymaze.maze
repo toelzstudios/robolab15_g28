@@ -1,0 +1,148 @@
+[[{
+  "dirs": ["EAST", "SOUTH"],
+  "token": false
+}, {
+  "dirs": ["EAST", "WEST"],
+  "token": false
+}, {
+  "dirs": ["EAST", "WEST"],
+  "token": false
+}, {
+  "dirs": ["SOUTH", "WEST"],
+  "token": false
+}, {
+  "dirs": ["SOUTH", "EAST"],
+  "token": false
+}, {
+  "dirs": ["WEST", "SOUTH", "EAST"],
+  "token": false
+}, {
+  "dirs": ["WEST"],
+  "token": true
+}], [{
+  "dirs": ["NORTH"],
+  "token": false
+}, {
+  "dirs": ["SOUTH"],
+  "token": false
+}, {
+  "dirs": ["SOUTH"],
+  "token": false
+}, {
+  "dirs": ["EAST", "NORTH", "SOUTH"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "SOUTH", "WEST"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "EAST", "SOUTH"],
+  "token": false
+}, {
+  "dirs": ["WEST", "SOUTH"],
+  "token": false
+}], [{
+  "dirs": ["SOUTH"],
+  "token": false
+}, {
+  "dirs": ["SOUTH", "NORTH"],
+  "token": false
+}, {
+  "dirs": ["EAST", "NORTH"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "WEST", "EAST"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "WEST"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "SOUTH"],
+  "token": false
+}, {
+  "dirs": ["NORTH"],
+  "token": false
+}], [{
+  "dirs": ["EAST", "NORTH"],
+  "token": false
+}, {
+  "dirs": ["EAST", "NORTH", "WEST"],
+  "token": false
+}, {
+  "dirs": ["EAST", "WEST", "SOUTH"],
+  "token": false
+}, {
+  "dirs": ["EAST", "WEST"],
+  "token": false
+}, {
+  "dirs": ["EAST", "WEST"],
+  "token": true
+}, {
+  "dirs": ["NORTH", "EAST", "WEST", "SOUTH"],
+  "token": false
+}, {
+  "dirs": ["WEST", "SOUTH"],
+  "token": false
+}], [{
+  "dirs": ["EAST", "SOUTH"],
+  "token": false
+}, {
+  "dirs": ["EAST", "SOUTH", "WEST"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "WEST", "EAST", "SOUTH"],
+  "token": false
+}, {
+  "dirs": ["WEST"],
+  "token": false
+}, {
+  "dirs": ["SOUTH"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "SOUTH"],
+  "token": true
+}, {
+  "dirs": ["NORTH", "SOUTH"],
+  "token": false
+}], [{
+  "dirs": ["NORTH"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "SOUTH", "EAST"],
+  "token": true
+}, {
+  "dirs": ["NORTH", "WEST"],
+  "token": false
+}, {
+  "dirs": ["SOUTH"],
+  "token": false
+}, {
+  "dirs": ["EAST", "NORTH", "SOUTH"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "SOUTH", "WEST"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "SOUTH"],
+  "token": false
+}], [{
+  "dirs": ["EAST"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "WEST"],
+  "token": false
+}, {
+  "dirs": ["EAST"],
+  "token": false
+}, {
+  "dirs": ["EAST", "NORTH", "WEST"],
+  "token": false
+}, {
+  "dirs": ["EAST", "WEST", "NORTH"],
+  "token": false
+}, {
+  "dirs": ["NORTH", "WEST"],
+  "token": true
+}, {
+  "dirs": ["NORTH"],
+  "token": false
+}]]
