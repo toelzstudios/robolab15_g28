@@ -1,12 +1,14 @@
 #include "../h/main.h"
-//#include "ecrobot_interface.h"
-int winkelconst = 180;
+
+const int winkelconst = 180;
 int orientation = 0;
 /* 0 norden
  * 1 osten
  * 2 süden
  * 3 westen
  */
+
+const int FORW = 1, RIGHT = 2, CONTR = 4, LEFT= 8;
 
 /* nxtOSEK hook to be invoked from an ISR in category 2 */
 void user_1ms_isr_type2(void) {
@@ -28,15 +30,6 @@ void ecrobot_device_initialize(void) {
 void ecrobot_device_terminate(void) {
 }
 
-void wait(unsigned long int ms) {
-	systick_wait_ms(ms);
-}
-int is_line() {
-	return ecrobot_get_light_sensor(NXT_PORT_S3) > 600;
-}
-void beep() {
-	ecrobot_sound_tone(220, 100, 100);
-}
 
 void print_string(int x, int y, char *msg) {
 	display_goto_xy(x, y);
@@ -50,6 +43,25 @@ void print_int(int x, int y, int value) {
 	display_update();
 }
 
+void beep() {
+	ecrobot_sound_tone(220, 100, 100);
+}
+
+void init() {
+	print_string(0, 2, "-----------");
+	print_string(0, 3, "Project - X");
+	print_string(0, 4, "-----------");
+	ecrobot_set_light_sensor_active(NXT_PORT_S3);
+}
+
+int is_line() {
+	return ecrobot_get_light_sensor(NXT_PORT_S3) > 600;
+}
+
+void wait(unsigned long int ms) {
+	systick_wait_ms(ms);
+}
+
 
 void stop_motor() {
 	nxt_motor_set_speed(NXT_PORT_B, 0, 1);
@@ -61,9 +73,11 @@ void move(int speed) {
 	nxt_motor_set_speed(NXT_PORT_C, speed, 0);
 }
 
-/* positiv: links herum
- * negativ: rechts herum
- * */
+/*
+ * Links herum rotieren
+ * degree: Winkel in Grad
+ * speed: Geschwindigkeit der Motoren
+ */
 void rotate_l(int degree, int speed) {
 	nxt_motor_set_count(NXT_PORT_B, 0);
 	nxt_motor_set_count(NXT_PORT_C, 0);
@@ -86,6 +100,13 @@ void rotate_l(int degree, int speed) {
 	}
 
 }
+
+/*
+ * Links herum rotieren bis Linie erreicht
+ * degree: Maximaler Winkel in Grad
+ * speed: Geschwindigkeit der Motoren
+ * return: Gibt zurück, ob Linie erkannt wurde
+ */
 int rotate_to_line_l(int maxdegree, int speed) {
 	nxt_motor_set_count(NXT_PORT_B, 0);
 	nxt_motor_set_count(NXT_PORT_C, 0);
@@ -112,6 +133,12 @@ int rotate_to_line_l(int maxdegree, int speed) {
 	}
 	return 0;
 }
+
+/*
+ * Rechts herum rotieren
+ * degree: Winkel in Grad
+ * speed: Geschwindigkeit der Motoren
+ */
 void rotate_r(int degree, int speed) {
 	nxt_motor_set_count(NXT_PORT_B, 0);
 	nxt_motor_set_count(NXT_PORT_C, 0);
@@ -134,6 +161,13 @@ void rotate_r(int degree, int speed) {
 	}
 
 }
+
+/*
+ * Rechts herum rotieren bis Linie erreicht
+ * degree: Maximaler Winkel in Grad
+ * speed: Geschwindigkeit der Motoren
+ * return: Gibt zurück, ob Linie erkannt wurde
+ */
 int rotate_to_line_r(int maxdegree, int speed) {
 	nxt_motor_set_count(NXT_PORT_B, 0);
 	nxt_motor_set_count(NXT_PORT_C, 0);
@@ -161,10 +195,17 @@ int rotate_to_line_r(int maxdegree, int speed) {
 	}
 	return 0;
 }
+
+/*
+ * Gibt zurück, ob Berühungssensor betätigt
+ */
 int touched(){
 	return ecrobot_get_touch_sensor(NXT_PORT_S1) || ecrobot_get_touch_sensor(NXT_PORT_S4);
 }
 
+/*
+ * Aufgaben, die beim Erkennen eines Tokens ausgeführt werden sollen
+ */
 void token(){
 	stop_motor();
 	beep();
@@ -172,65 +213,20 @@ void token(){
 	//token counter aufrufen!!!
 
 }
+
+/*
+ * Suche Linie
+ */
 int search_line() {
-	int i;
-	int found = 0;
-	int max = 6;
-	int angle = 3;
-
-	display_goto_xy(0, 0);
-	display_int(found, 1);
-	display_update();
-
-	wait(200);
-	for (i = 0; i < max; i++) {
-		rotate_l(angle, 65);
-		if (is_line()) {
-			found = 1;
-			display_goto_xy(0, 0);
-			display_int(found, 1);
-			display_update();
-			wait(200);
-			return found;
-		}
-		systick_wait_ms(400);
-	}
-	display_goto_xy(0, 0);
-	display_int(found, 1);
-	display_update();
-
-	if (found == 1) { return found;}
-		rotate_r(angle*(max+1), 65);
-		int k=0;
-		max = 6,
-		angle = 3;
-		for (k = 0; k < max; k++) {
-			rotate_r(angle, 65);
-			if (is_line()) {
-								found = 1;
-				return found;
-			}
-
-		systick_wait_ms(400);
-	}
-	rotate_l(angle*max, 65);
-	return found;
-
-}
-int search_line2() {
 	int found = 0;
 	int max = 20;
 
-	display_goto_xy(0, 3);
-	display_int(found, 1);
-	display_update();
+	print_int(0, 3, found);
 
 	wait(200);
 	found = rotate_to_line_l(max, 65);
 	found =is_line();
-	display_goto_xy(0, 3);
-	display_int(found, 1);
-	display_update();
+	print_int(0, 3, found);
 
 	wait(200);
 	if (found == 1) { return 1;}
@@ -243,6 +239,10 @@ int search_line2() {
 	return found;
 
 }
+
+/*
+ * In die Kreuzung einfahren
+ */
 void junction(int speed) {
 	int status = 1;
 	int w_degree = 230;
@@ -265,7 +265,10 @@ void junction(int speed) {
 	}
 }
 
-
+/*
+ * Kreuzung untersuchen
+ * return: entdeckte Abzweige
+ */
 int exploration(){
 	int found_left;
 	int found_right;
@@ -305,7 +308,8 @@ int exploration(){
 
 		wait(4000);
 
-		return found_forward + found_right*10 +found_control*100+found_left*1000;
+		//return found_forward + found_right*10 +found_control*100+found_left*1000;
+		return found_forward*FORW + found_right*RIGHT + found_control*CONTR + found_left*LEFT;
 }
 
 void turn_left(){
@@ -403,12 +407,10 @@ void turn_east(){
 }
 
 TASK( OSEK_Main_Task) {
-	print_string(0, 3, "Project - X");
 
+	init();
 
-	ecrobot_set_light_sensor_active(NXT_PORT_S3);
-
-	int hallo = 0;
+	int line = 0;
 
 	while (1) {
 		if (is_line()) {
@@ -416,25 +418,25 @@ TASK( OSEK_Main_Task) {
 			if (touched()) {token();}
 		} else {
 			stop_motor();
-			hallo = search_line2();
+			line = search_line();
 			display_goto_xy(1, 1);
-			display_int(hallo, 1);
+			display_int(line, 1);
 			display_update();
 
-			if (hallo < 1) {
+			if (line < 1) {
 				display_goto_xy(0, 1);
 				display_string("Kreuzung entdeckt");
 				display_update();
 
 				junction(65);
 				beep();
-				hallo = exploration();
+				line = exploration();
+				if(line & LEFT) {
+					turn_left();
+				}
 				turn_west();
 
-				//rotate_to_line_l(720,65);
-				//rotate_r(90, 65);
-				hallo = search_line2();
-				//junction(65);
+				line = search_line();
 			}
 		}
 

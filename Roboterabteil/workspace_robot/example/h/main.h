@@ -17,6 +17,4 @@ void turn_south();
 
 void turn_west();
 
-int orientation();
-
 #endif /* MAIN_H_ */
