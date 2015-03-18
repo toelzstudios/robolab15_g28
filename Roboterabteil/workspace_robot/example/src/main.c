@@ -141,51 +141,6 @@ int touched(){
 }
 
 int search_line() {
-	int i;
-	int found = 0;
-	int max = 6;
-	int angle = 3;
-
-	display_goto_xy(0, 0);
-	display_int(found, 1);
-	display_update();
-
-	wait(200);
-	for (i = 0; i < max; i++) {
-		rotate_l(angle, 65);
-		if (is_line()) {
-			found = 1;
-			display_goto_xy(0, 0);
-			display_int(found, 1);
-			display_update();
-			wait(200);
-			return found;
-		}
-		systick_wait_ms(400);
-	}
-	display_goto_xy(0, 0);
-	display_int(found, 1);
-	display_update();
-
-	if (found == 1) { return found;}
-		rotate_r(angle*(max+1), 65);
-		int k=0;
-		max = 6,
-		angle = 3;
-		for (k = 0; k < max; k++) {
-			rotate_r(angle, 65);
-			if (is_line()) {
-								found = 1;
-				return found;
-			}
-
-		systick_wait_ms(400);
-	}
-	rotate_l(angle*max, 65);
-	return found;
-
-}
-int search_line2() {
 	int found = 0;
 	int max = 20;
 
@@ -248,7 +203,7 @@ TASK( OSEK_Main_Task) {
 			if (touched()) {beep();}
 		} else {
 			stop_motor();
-			hallo = search_line2();
+			hallo = search_line();
 			display_goto_xy(1, 1);
 			display_int(hallo, 1);
 			display_update();
