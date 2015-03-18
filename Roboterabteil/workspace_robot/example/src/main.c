@@ -44,7 +44,7 @@ void print_int(int x, int y, int value) {
 }
 
 void beep() {
-	ecrobot_sound_tone(220, 100, 100);
+	ecrobot_sound_tone(8220, 200, 100);
 }
 
 void init() {
@@ -55,7 +55,13 @@ void init() {
 }
 
 int is_line() {
-	return ecrobot_get_light_sensor(NXT_PORT_S3) > 600;
+	int i;
+	int help=0;
+	for (i=0; i<2;i++){
+		help += ecrobot_get_light_sensor(NXT_PORT_S3);
+	}
+	help /=2;
+	return help > 600;
 }
 
 void wait(unsigned long int ms) {
@@ -217,24 +223,25 @@ void token(){
 /*
  * Suche Linie
  */
-int search_line() {
+int search_line(int max) {
 	int found = 0;
-	int max = 20;
 
-	print_int(0, 3, found);
-
-	wait(200);
 	found = rotate_to_line_l(max, 65);
 	found =is_line();
-	print_int(0, 3, found);
 
 	wait(200);
 	if (found == 1) { return 1;}
-	else {found=rotate_to_line_r(2*max, 65);}
-	wait(200);
+	else {found=rotate_to_line_r(3*max, 65);}
+
 	if (found == 0){
-		rotate_l(max, 65);
+		found = rotate_to_line_l(4*max, 65);
+
 	}
+	if (found == 0){
+		rotate_r(2*max, 65);
+
+		}
+
 	wait(200);
 	return found;
 
@@ -245,7 +252,7 @@ int search_line() {
  */
 void junction(int speed) {
 	int status = 1;
-	int w_degree = 230;
+	int w_degree = 225;
 	nxt_motor_set_count(NXT_PORT_B, 0);
 	nxt_motor_set_count(NXT_PORT_C, 0);
 	while (status) {
@@ -306,7 +313,7 @@ int exploration(){
 		print_int(6, 5, found_control);
 		print_int(6, 6, found_left);
 
-		wait(4000);
+		wait(400);
 
 		//return found_forward + found_right*10 +found_control*100+found_left*1000;
 		return found_forward*FORW + found_right*RIGHT + found_control*CONTR + found_left*LEFT;
@@ -407,25 +414,35 @@ void turn_east(){
 }
 
 int drive_to_crossroad(){
+	nxt_motor_set_count(NXT_PORT_B, 0);
 	while(1){
+
 		int line_state;
 		if (is_line()) {
 			move(65);
+			if(nxt_motor_get_count(NXT_PORT_B) < 350){
+				move(80);
+				wait(100);
+			}
+			wait(30);
 			if (touched()) {
 				token();
 				print_string(0, 3, "Token gefunden");
-				return 1;
-			} else {
+				return 0;
+			}
+
+		} else {
 				stop_motor();
-				line_state = search_line();
+				line_state = search_line(10);
+
 				if (line_state ==0) {
 					print_string(0,1,"Kreuzung entdeckt");
 					junction(65);
 					beep();
-					return 0;
+					return 1;
 				}
 			}
-		}
+
 	}
 }
 
@@ -436,18 +453,51 @@ TASK( OSEK_Main_Task) {
 		if(drive_to_crossroad()){
 		beep();
 		help = exploration();
-		if(help & LEFT) {
-			turn_left();
-		} else {
-			turn_right();
-		}
-		//turn_west();
+		turn_north();
 
-		} else {
+		} else {}
+		if(drive_to_crossroad()){
+				beep();
+				help = exploration();
+				turn_east();
 
-		}
+				}
+		if(drive_to_crossroad()){
+				beep();
+				help = exploration();
+				turn_south();
 
+				}
+		if(drive_to_crossroad()){
+						beep();
+						help = exploration();
+						turn_west();
 
+						}
+		if(drive_to_crossroad()){
+						beep();
+						//help = exploration();
+						turn_south();
+
+						}
+		if(drive_to_crossroad()){
+						beep();
+						//help = exploration();
+						turn_east();
+
+						}
+		if(drive_to_crossroad()){
+								beep();
+								//help = exploration();
+								turn_north();
+
+								}
+		if(drive_to_crossroad()){
+								beep();
+								//help = exploration();
+								turn_west();
+
+								}
 	}
 }
 
