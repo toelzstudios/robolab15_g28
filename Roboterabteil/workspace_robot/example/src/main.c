@@ -406,48 +406,45 @@ void turn_east(){
 	orientation = 1;
 }
 
-TASK( OSEK_Main_Task) {
-
-	init();
-
-	int line = 0;
-
-	while (1) {
+int drive_to_crossroad(){
+	while(1){
+		int line_state;
 		if (is_line()) {
 			move(65);
-			if (touched()) {token();}
-		} else {
-			stop_motor();
-			line = search_line();
-			display_goto_xy(1, 1);
-			display_int(line, 1);
-			display_update();
-
-			if (line < 1) {
-				display_goto_xy(0, 1);
-				display_string("Kreuzung entdeckt");
-				display_update();
-
-				junction(65);
-				beep();
-				line = exploration();
-				if(line & LEFT) {
-					turn_left();
+			if (touched()) {
+				token();
+				print_string(0, 3, "Token gefunden");
+				return 1;
+			} else {
+				stop_motor();
+				line_state = search_line();
+				if (line_state ==0) {
+					print_string(0,1,"Kreuzung entdeckt");
+					junction(65);
+					beep();
+					return 0;
 				}
-				turn_west();
-
-				line = search_line();
 			}
+		}
+	}
+}
+
+TASK( OSEK_Main_Task) {
+	init();
+	int help = 0;
+	while (1) {
+		if(drive_to_crossroad()){
+		beep();
+		help = exploration();
+		turn_west();
+
+		} else {
+
 		}
 
 
 	}
 }
-
-
-
-
-
 
 
 
