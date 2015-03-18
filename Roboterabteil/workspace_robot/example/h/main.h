@@ -9,6 +9,14 @@
 
 /* add user headers here: */
 
-void hello_world();
+void turn_north();
+
+void turn_east();
+
+void turn_south();
+
+void turn_west();
+
+int orientation();
 
 #endif /* MAIN_H_ */
