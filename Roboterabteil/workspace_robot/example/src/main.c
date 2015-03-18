@@ -436,7 +436,12 @@ TASK( OSEK_Main_Task) {
 		if(drive_to_crossroad()){
 		beep();
 		help = exploration();
-		turn_west();
+		if(help & LEFT) {
+			turn_left();
+		} else {
+			turn_right();
+		}
+		//turn_west();
 
 		} else {
 
