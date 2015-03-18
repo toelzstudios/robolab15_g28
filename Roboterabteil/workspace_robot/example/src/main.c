@@ -22,6 +22,18 @@ void beep() {
 	ecrobot_sound_tone(220, 100, 100);
 }
 
+void print_string(int x, int y, char *msg) {
+	display_goto_xy(x, y);
+	display_string(msg);
+	display_update();
+}
+
+void print_int(int x, int y, int value) {
+	display_goto_xy(x, y);
+	display_int(value, 1);
+	display_update();
+}
+
 void stop_motor() {
 	nxt_motor_set_speed(NXT_PORT_B, 0, 1);
 	nxt_motor_set_speed(NXT_PORT_C, 0, 1);
@@ -189,9 +201,7 @@ void junction(int speed) {
 }
 
 TASK( OSEK_Main_Task) {
-	display_goto_xy(0, 0);
-	display_string("Project - X");
-	display_update();
+	print_string(0,0, "Project - X");
 
 	ecrobot_set_light_sensor_active(NXT_PORT_S3);
 
@@ -204,14 +214,10 @@ TASK( OSEK_Main_Task) {
 		} else {
 			stop_motor();
 			hallo = search_line();
-			display_goto_xy(1, 1);
-			display_int(hallo, 1);
-			display_update();
+			print_int(1, 1, hallo);
 
 			if (hallo < 1) {
-				display_goto_xy(0, 1);
-				display_string("Kreuzung entdeckt");
-				display_update();
+				print_string(0, 1, "Kreuzung entdeckt");
 
 				junction(65);
 				beep();
