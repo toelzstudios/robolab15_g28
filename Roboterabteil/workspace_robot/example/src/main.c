@@ -171,13 +171,13 @@ void rotate_r(int degree, int speed) {
 			nxt_motor_set_speed(NXT_PORT_B, -speed, 0);
 			status = 1;
 		} else {
-			//nxt_motor_set_speed(NXT_PORT_B, 0, 1);
+			nxt_motor_set_speed(NXT_PORT_B, 0, 1);
 		}
 		if (nxt_motor_get_count(NXT_PORT_C) < w_degree) {
 			nxt_motor_set_speed(NXT_PORT_C, speed, 0);
 			status = 1;
 		} else {
-			//nxt_motor_set_speed(NXT_PORT_C, 0, 1);
+			nxt_motor_set_speed(NXT_PORT_C, 0, 1);
 		}
 	}
 
