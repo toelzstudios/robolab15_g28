@@ -48,6 +48,7 @@ void wait(unsigned long int ms) {
 }
 
 void beep() {
+<<<<<<< HEAD
 	ecrobot_sound_tone(220, 200, 100);
 }
 
@@ -60,6 +61,9 @@ void beep_error() {
 		ecrobot_sound_tone(800, 200, 10);
 		wait(500);
 	}
+=======
+	ecrobot_sound_tone(220, 100, 100);
+>>>>>>> parent of b149937... eigene Änderungen entfernt
 }
 
 void init() {
@@ -70,13 +74,7 @@ void init() {
 }
 
 int is_line() {
-	int i;
-	int help=0;
-	for (i=0; i<2;i++){
-		help += ecrobot_get_light_sensor(NXT_PORT_S3);
-	}
-	help /=2;
-	return help > 600;
+	return ecrobot_get_light_sensor(NXT_PORT_S3) > 600;
 }
 
 
@@ -239,9 +237,13 @@ void token(){
  * Suche Linie
  * max: Maximaler Winkel
  */
-int search_line(int max) {
+int search_line() {
 	int found = 0;
+	int max = 20;
 
+	print_int(0, 3, found);
+
+<<<<<<< HEAD
 	found = rotate_to_line_l(2*max, 65);
 	found = is_line();
 
@@ -262,6 +264,21 @@ int search_line(int max) {
 // 	}
 // 
 // 	wait(200);
+=======
+	wait(200);
+	found = rotate_to_line_l(max, 65);
+	found =is_line();
+	print_int(0, 3, found);
+
+	wait(200);
+	if (found == 1) { return 1;}
+	else {found=rotate_to_line_r(2*max, 65);}
+	wait(200);
+	if (found == 0){
+		rotate_l(max, 65);
+	}
+	wait(200);
+>>>>>>> parent of b149937... eigene Änderungen entfernt
 	return found;
 
 }
@@ -271,7 +288,11 @@ int search_line(int max) {
  */
 void junction(int speed) {
 	int status = 1;
+<<<<<<< HEAD
 	int w_degree = 270;
+=======
+	int w_degree = 230;
+>>>>>>> parent of b149937... eigene Änderungen entfernt
 	nxt_motor_set_count(NXT_PORT_B, 0);
 	nxt_motor_set_count(NXT_PORT_C, 0);
 	while (status) {
@@ -332,7 +353,13 @@ int exploration(){
 		print_int(6, 5, found_control);
 		print_int(6, 6, found_left);
 
+<<<<<<< HEAD
 		wait(400);
+=======
+		wait(4000);
+
+		//return found_forward + found_right*10 +found_control*100+found_left*1000;
+>>>>>>> parent of b149937... eigene Änderungen entfernt
 		return found_forward*FORW + found_right*RIGHT + found_control*CONTR + found_left*LEFT;
 }
 
@@ -427,11 +454,10 @@ void turn_east(){
 }
 
 int drive_to_crossroad(){
-	nxt_motor_set_count(NXT_PORT_B, 0);
 	while(1){
-
 		int line_state;
 		if (is_line()) {
+<<<<<<< HEAD
 			
 			if(nxt_motor_get_count(NXT_PORT_B) < 350){
 				move(80);
@@ -440,25 +466,29 @@ int drive_to_crossroad(){
 				move(65);
 				wait(30);
 			}
+=======
+			move(65);
+>>>>>>> parent of b149937... eigene Änderungen entfernt
 			if (touched()) {
 				token();
 				print_string(0, 3, "Token gefunden");
-				return 0;
-			}
-
-		} else {
+				return 1;
+			} else {
 				stop_motor();
-				line_state = search_line(10);
-
+				line_state = search_line();
 				if (line_state ==0) {
 					print_string(0,1,"Kreuzung entdeckt");
 					beep();
+<<<<<<< HEAD
 					junction(65);
 					
 					return 1;
+=======
+					return 0;
+>>>>>>> parent of b149937... eigene Änderungen entfernt
 				}
 			}
-
+		}
 	}
 }
 
@@ -467,50 +497,19 @@ void figur() {
 	if(drive_to_crossroad()){
 		beep();
 		help = exploration();
-		turn_north();
+		if(help & LEFT) {
+			turn_left();
+		} else {
+			turn_right();
+		}
+		//turn_west();
 
-		} else {}
-		if(drive_to_crossroad()){
-				beep();
-				help = exploration();
-				turn_east();
+		} else {
 
-				}
-		if(drive_to_crossroad()){
-				beep();
-				help = exploration();
-				turn_south();
+		}
 
-				}
-		if(drive_to_crossroad()){
-						beep();
-						help = exploration();
-						turn_west();
 
-						}
-		if(drive_to_crossroad()){
-						beep();
-						//help = exploration();
-						turn_south();
-
-						}
-		if(drive_to_crossroad()){
-						beep();
-						//help = exploration();
-						turn_east();
-
-						}
-		if(drive_to_crossroad()){
-								beep();
-								//help = exploration();
-								turn_north();
-
-								}
-		if(drive_to_crossroad()){
-								beep();
-								//help = exploration();
-								turn_west();
-
+<<<<<<< HEAD
 								}
 }
 
@@ -529,6 +528,8 @@ TASK( OSEK_Main_Task) {
 				turn_back();
 			}
 		}
+=======
+>>>>>>> parent of b149937... eigene Änderungen entfernt
 	}
 }
 
