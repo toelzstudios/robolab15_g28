@@ -14,7 +14,7 @@
 
 TASK( OSEK_Main_Task) {
 	init();
-	drive_to_crossroad();
+	//drive_to_crossroad();
 
 	robot r;
 	set_robot(&r);

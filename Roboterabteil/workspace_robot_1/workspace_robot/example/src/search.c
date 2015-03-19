@@ -301,11 +301,14 @@ void runbot(robot *r) {
 		run_by_card(r);
 		if (r->sel_dir==MYBREAK) {
 				//print_card(&c);
-				r->sel_dir = 2;
+		/*		r->sel_dir = 2;
 				get_nearest_unknown(r->cur_pos, &c, MYBREAK, &return_p);
 				r->cur_pos= return_p;
 				//Robot_Move(get_orient_of_next_point(return_p, &c));
-				return;
+				return;  */
+		while(1){
+			beep();
+		}
 			}
 	}
 

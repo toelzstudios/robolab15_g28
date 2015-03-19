@@ -508,6 +508,7 @@ void drive_to_crossroad(){
 				line_state = search_line(5);
 
 				if (line_state ==0) {
+					display_clear(0);
 					print_string(0,1,"Kreuzung entdeckt");
 
 					junction(65);
