@@ -48,22 +48,7 @@ void wait(unsigned long int ms) {
 }
 
 void beep() {
-<<<<<<< HEAD
-	ecrobot_sound_tone(220, 200, 100);
-}
-
-void beep_error() {
-	for(int i = 0; i < 10; i++){
-		ecrobot_sound_tone(800, 200, 10);
-		wait(300);
-		ecrobot_sound_tone(1600, 200, 10);
-		wait(300);
-		ecrobot_sound_tone(800, 200, 10);
-		wait(500);
-	}
-=======
 	ecrobot_sound_tone(220, 100, 100);
->>>>>>> parent of b149937... eigene Änderungen entfernt
 }
 
 void init() {
@@ -242,29 +227,6 @@ int search_line() {
 	int max = 20;
 
 	print_int(0, 3, found);
-
-<<<<<<< HEAD
-	found = rotate_to_line_l(2*max, 65);
-	found = is_line();
-
-	wait(200);
-	if (found == 1) {
-		return 1;
-	}
-	else {
-		found=rotate_to_line_r(2*max, 65); //3*
-	}
-// 
-// 	if (found == 0){
-// 		found = rotate_to_line_l(4*max, 65);
-// 
-// 	}
-// 	if (found == 0){
-// 		rotate_r(2*max, 65);
-// 	}
-// 
-// 	wait(200);
-=======
 	wait(200);
 	found = rotate_to_line_l(max, 65);
 	found =is_line();
@@ -278,7 +240,6 @@ int search_line() {
 		rotate_l(max, 65);
 	}
 	wait(200);
->>>>>>> parent of b149937... eigene Änderungen entfernt
 	return found;
 
 }
@@ -288,11 +249,7 @@ int search_line() {
  */
 void junction(int speed) {
 	int status = 1;
-<<<<<<< HEAD
-	int w_degree = 270;
-=======
 	int w_degree = 230;
->>>>>>> parent of b149937... eigene Änderungen entfernt
 	nxt_motor_set_count(NXT_PORT_B, 0);
 	nxt_motor_set_count(NXT_PORT_C, 0);
 	while (status) {
@@ -353,13 +310,9 @@ int exploration(){
 		print_int(6, 5, found_control);
 		print_int(6, 6, found_left);
 
-<<<<<<< HEAD
-		wait(400);
-=======
 		wait(4000);
 
 		//return found_forward + found_right*10 +found_control*100+found_left*1000;
->>>>>>> parent of b149937... eigene Änderungen entfernt
 		return found_forward*FORW + found_right*RIGHT + found_control*CONTR + found_left*LEFT;
 }
 
@@ -457,18 +410,7 @@ int drive_to_crossroad(){
 	while(1){
 		int line_state;
 		if (is_line()) {
-<<<<<<< HEAD
-			
-			if(nxt_motor_get_count(NXT_PORT_B) < 350){
-				move(80);
-				wait(50);
-			} else {
-				move(65);
-				wait(30);
-			}
-=======
 			move(65);
->>>>>>> parent of b149937... eigene Änderungen entfernt
 			if (touched()) {
 				token();
 				print_string(0, 3, "Token gefunden");
@@ -479,13 +421,7 @@ int drive_to_crossroad(){
 				if (line_state ==0) {
 					print_string(0,1,"Kreuzung entdeckt");
 					beep();
-<<<<<<< HEAD
-					junction(65);
-					
-					return 1;
-=======
 					return 0;
->>>>>>> parent of b149937... eigene Änderungen entfernt
 				}
 			}
 		}
@@ -507,29 +443,6 @@ void figur() {
 		} else {
 
 		}
-
-
-<<<<<<< HEAD
-								}
-}
-
-TASK( OSEK_Main_Task) {
-	init();
-	int help = 0;
-	while (1) {
-		if(drive_to_crossroad()) {
-			help = exploration();
-			if(help & LEFT) {
-				turn_left();
-			} else if (help & RIGHT) {
-				turn_right();
-			} else if (help & FORW) {
-			} else {
-				turn_back();
-			}
-		}
-=======
->>>>>>> parent of b149937... eigene Änderungen entfernt
 	}
 }
 
