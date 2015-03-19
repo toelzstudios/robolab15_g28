@@ -18,17 +18,29 @@
 
 
 const int winkelconst = 180;
+int token_count = 0;
+
 int orientation = 0;
-/* 0 norden
- * 1 osten
- * 2 süden
- * 3 westen
+
+/* Variable, die aktuelle Himmelsrichtung speichert, in die der Roboter zeigt
+ * dabei entspricht:
+ * 0 Norden
+ * 1 Osten
+ * 2 Süden
+ * 3 Westen
  */
 
 /* nxtOSEK hook to be invoked from an ISR in category 2 */
 void user_1ms_isr_type2(void) {
 }
 
+/* Verändert Himmelsr-zeige-Richtung
+ *
+ *  Eingabe: Anzahl der Vierteldrehung
+ *  dabei entspricht: 	positiv: nach rechts gedreht
+ *  					negativ: nach links  gedreht
+ *
+ */
 void change_direction(int x){
 	orientation += x;
 	if (orientation<0){
@@ -225,18 +237,22 @@ int touched(){
 }
 
 /*
- * Aufgaben, die beim Erkennen eines Tokens ausgeführt werden sollen
+ * Aufgaben, die beim Erkennen eines Tokens ausgeführt werden sollen:
  */
 void token(){
-	stop_motor();
-	beep();
-	wait(10000);
+	stop_motor();			// Anhalten
+	beep();					// Piepen, 1s bei 220 Hz
+	wait(10000);			// 10s warten
 	//token counter aufrufen!!!
 
 }
 
 /*
- * Suche Linie
+ * Linienfindung:
+ * Eingabe:  Suchradius in grad
+ * Rückgabe: 	0... keine Linie gefunden
+ * 				1... Linie gefunden
+ * 	pendelt zuerst nach links, dann nach rechts
  */
 int search_line(int max) {
 	int found = 0;
@@ -289,7 +305,8 @@ void junction(int speed) {
 
 /*
  * Kreuzung untersuchen
- * return: entdeckte Abzweige
+ * Rückgabe: 	entdeckte Abzweige, Codierung siehe #defines,
+ * 				in globalen Himmelsrichtungen
  */
 int exploration(){
 	int found_left;
@@ -297,37 +314,30 @@ int exploration(){
 	int found_forward;
 	int found_control;
 
-	rotate_l(45, 65);
-	found_forward = rotate_to_line_r(90, 65);
+	int exp_speed = 65;
+
+	rotate_l(45, exp_speed);
+
+	found_forward = rotate_to_line_r(90, exp_speed);
+
 	if (found_forward){
-		rotate_r(45, 65);
+		rotate_r(45, exp_speed);
 	}
 
-	found_right = rotate_to_line_r(90, 65);
+	found_right = rotate_to_line_r(90, exp_speed);
 		if (found_right){
-			rotate_r(45, 65);
+			rotate_r(45, exp_speed);
 		}
 
-	found_control = rotate_to_line_r(90, 65);
+	found_control = rotate_to_line_r(90, exp_speed);
 		if (found_control){
-			rotate_r(45, 65);
+			rotate_r(45, exp_speed);
 		}
 
-	found_left = rotate_to_line_r(135, 65);
+	found_left = rotate_to_line_r(135, exp_speed);
 		if (found_left){
-			rotate_r(90, 65);
+			rotate_r(90, exp_speed);
 		}
-		display_clear(0);
-		/*print_string(0, 3, "vorn");
-		print_string(0, 4, "rechts");
-		print_string(0, 5, "hinten");
-		print_string(0, 6, "links");
-
-		print_int(6, 3, found_forward);
-		print_int(6, 4, found_right);
-		print_int(6, 5, found_control);
-		print_int(6, 6, found_left);
-		*/
 		display_clear(0);
 
 		if (found_left){
@@ -341,11 +351,6 @@ int exploration(){
 		if (found_forward){
 			print_string(1, 5, "GERADEAUS");
 		}
-
-
-
-
-		wait(50);
 
 		int found_north = 0;
 		int found_east  = 0;
@@ -494,7 +499,7 @@ void drive_to_crossroad(){
 		if (is_line()) {
 			move(65);
 			if(nxt_motor_get_count(NXT_PORT_B) < 300){
-				move(70);
+				move(80);
 				wait(100);
 			}
 			wait(30);
