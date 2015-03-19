@@ -43,8 +43,23 @@ void print_int(int x, int y, int value) {
 	display_update();
 }
 
+void wait(unsigned long int ms) {
+	systick_wait_ms(ms);
+}
+
 void beep() {
-	ecrobot_sound_tone(8220, 200, 100);
+	ecrobot_sound_tone(220, 200, 100);
+}
+
+void beep_error() {
+	for(int i = 0; i < 10; i++){
+		ecrobot_sound_tone(800, 200, 10);
+		wait(300);
+		ecrobot_sound_tone(1600, 200, 10);
+		wait(300);
+		ecrobot_sound_tone(800, 200, 10);
+		wait(500);
+	}
 }
 
 void init() {
@@ -64,9 +79,7 @@ int is_line() {
 	return help > 600;
 }
 
-void wait(unsigned long int ms) {
-	systick_wait_ms(ms);
-}
+
 
 
 void stop_motor() {
@@ -125,12 +138,14 @@ int rotate_to_line_l(int maxdegree, int speed) {
 			status = 1;
 		} else {
 			nxt_motor_set_speed(NXT_PORT_B, 0, 1);
+			//nxt_motor_set_speed(NXT_PORT_B, 0, 0);
 		}
 		if (nxt_motor_get_count(NXT_PORT_C) > -w_degree) {
 			nxt_motor_set_speed(NXT_PORT_C, -speed, 0);
 			status = 1;
 		} else {
 			nxt_motor_set_speed(NXT_PORT_C, 0, 1);
+			//nxt_motor_set_speed(NXT_PORT_C, 0, 0);
 		}
 		if (is_line()){
 			stop_motor();
@@ -222,27 +237,31 @@ void token(){
 
 /*
  * Suche Linie
+ * max: Maximaler Winkel
  */
 int search_line(int max) {
 	int found = 0;
 
-	found = rotate_to_line_l(max, 65);
-	found =is_line();
+	found = rotate_to_line_l(2*max, 65);
+	found = is_line();
 
 	wait(200);
-	if (found == 1) { return 1;}
-	else {found=rotate_to_line_r(3*max, 65);}
-
-	if (found == 0){
-		found = rotate_to_line_l(4*max, 65);
-
+	if (found == 1) {
+		return 1;
 	}
-	if (found == 0){
-		rotate_r(2*max, 65);
-
-		}
-
-	wait(200);
+	else {
+		found=rotate_to_line_r(2*max, 65); //3*
+	}
+// 
+// 	if (found == 0){
+// 		found = rotate_to_line_l(4*max, 65);
+// 
+// 	}
+// 	if (found == 0){
+// 		rotate_r(2*max, 65);
+// 	}
+// 
+// 	wait(200);
 	return found;
 
 }
@@ -252,7 +271,7 @@ int search_line(int max) {
  */
 void junction(int speed) {
 	int status = 1;
-	int w_degree = 225;
+	int w_degree = 270;
 	nxt_motor_set_count(NXT_PORT_B, 0);
 	nxt_motor_set_count(NXT_PORT_C, 0);
 	while (status) {
@@ -314,8 +333,6 @@ int exploration(){
 		print_int(6, 6, found_left);
 
 		wait(400);
-
-		//return found_forward + found_right*10 +found_control*100+found_left*1000;
 		return found_forward*FORW + found_right*RIGHT + found_control*CONTR + found_left*LEFT;
 }
 
@@ -323,9 +340,8 @@ void turn_left(){
 	int found;
 	rotate_l(45,65);
 	found = rotate_to_line_l(90,65);
-	while (found ==0){
-		beep();
-		wait(100);
+	if (found ==0){
+		beep_error();
 	}
 	change_direction(-1);
 	print_string(0,7,"Richtung");
@@ -337,9 +353,8 @@ void turn_right(){
 	int found;
 	rotate_r(45,65);
 	found = rotate_to_line_r(90,65);
-	while (found ==0){
-		beep();
-		wait(100);
+	if (found ==0){
+		beep_error();
 	}
 	change_direction(1);
 	print_string(0,7,"Richtung");
@@ -351,9 +366,8 @@ void turn_back(){
 	int found;
 	rotate_r(135,65);
 	found = rotate_to_line_r(90,65);
-	while (found ==0){
-		beep();
-		wait(100);
+	if (found ==0){
+		beep_error();
 	}
 	change_direction(2);
 	print_string(0,7,"Richtung");
@@ -365,9 +379,8 @@ void turn_forward(){
 	int found;
 	rotate_l(30,65);
 	found = rotate_to_line_r(130,65);
-	while (found ==0){
-		beep();
-		wait(100);
+	if (found ==0){
+		beep_error();
 	}
 	print_string(0,7,"Richtung");
 	print_int(9,7, orientation);
@@ -419,12 +432,14 @@ int drive_to_crossroad(){
 
 		int line_state;
 		if (is_line()) {
-			move(65);
+			
 			if(nxt_motor_get_count(NXT_PORT_B) < 350){
 				move(80);
-				wait(100);
+				wait(50);
+			} else {
+				move(65);
+				wait(30);
 			}
-			wait(30);
 			if (touched()) {
 				token();
 				print_string(0, 3, "Token gefunden");
@@ -437,8 +452,9 @@ int drive_to_crossroad(){
 
 				if (line_state ==0) {
 					print_string(0,1,"Kreuzung entdeckt");
-					junction(65);
 					beep();
+					junction(65);
+					
 					return 1;
 				}
 			}
@@ -446,11 +462,9 @@ int drive_to_crossroad(){
 	}
 }
 
-TASK( OSEK_Main_Task) {
-	init();
+void figur() {
 	int help = 0;
-	while (1) {
-		if(drive_to_crossroad()){
+	if(drive_to_crossroad()){
 		beep();
 		help = exploration();
 		turn_north();
@@ -498,6 +512,23 @@ TASK( OSEK_Main_Task) {
 								turn_west();
 
 								}
+}
+
+TASK( OSEK_Main_Task) {
+	init();
+	int help = 0;
+	while (1) {
+		if(drive_to_crossroad()) {
+			help = exploration();
+			if(help & LEFT) {
+				turn_left();
+			} else if (help & RIGHT) {
+				turn_right();
+			} else if (help & FORW) {
+			} else {
+				turn_back();
+			}
+		}
 	}
 }
 
