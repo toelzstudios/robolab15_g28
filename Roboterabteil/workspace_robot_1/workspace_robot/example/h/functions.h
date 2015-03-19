@@ -233,7 +233,7 @@ int rotate_to_line_r(int maxdegree, int speed) {
  * Gibt zurück, ob Berühungssensor betätigt
  */
 int touched(){
-	return ecrobot_get_touch_sensor(NXT_PORT_S1) || ecrobot_get_touch_sensor(NXT_PORT_S4);
+	return ecrobot_get_touch_sensor(NXT_PORT_S1) || ecrobot_get_touch_sensor(NXT_PORT_S2) || ecrobot_get_touch_sensor(NXT_PORT_S4);
 }
 
 /*
