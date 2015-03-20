@@ -14,6 +14,19 @@
 
 TASK( OSEK_Main_Task) {
 	init();
+	/*
+	if(exploration()){
+		wait(10000);
+	}
+	*/
+
+
+	while(0){
+		print_int(0,0,ecrobot_get_light_sensor(NXT_PORT_S3));
+		wait(10);
+		display_clear;
+	}
+
 	//drive_to_crossroad();
 
 	robot r;

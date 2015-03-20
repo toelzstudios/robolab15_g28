@@ -71,7 +71,7 @@ void print_int(int x, int y, int value) {
 }
 
 void beep() {
-	ecrobot_sound_tone(8220, 200, 100);
+	ecrobot_sound_tone(220, 100, 100);
 }
 
 void init() {
@@ -88,7 +88,7 @@ int is_line() {
 		help += ecrobot_get_light_sensor(NXT_PORT_S3);
 	}
 	help /=2;
-	return help > 510; //ehemals 600
+	return help > 550; //ehemals 600
 }
 
 void wait(unsigned long int ms) {
@@ -530,8 +530,8 @@ void Robot_Move(int direction){
 	switch(direction) {
 			case MYSOUTH: turn_south(); break;
 			case MYNORTH: turn_north(); break;
-			case MYWEST: turn_west(); break;
-			case MYEAST: turn_east(); break;
+			case MYWEST:  turn_west(); break;
+			case MYEAST:  turn_east(); break;
 		}
 	drive_to_crossroad();
 
@@ -551,6 +551,4 @@ void set_robot(robot *r){
 }
 
 
-
-
-#endif /* MAIN_H_ */
+#endif /* FUNCTIONS_H_ */
