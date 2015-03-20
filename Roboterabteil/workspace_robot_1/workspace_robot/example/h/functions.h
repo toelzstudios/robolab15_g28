@@ -18,7 +18,8 @@
 
 
 const int winkelconst = 180;
-int token_count = 0;
+
+int token = 0;
 
 int orientation = 0;
 
@@ -239,10 +240,12 @@ int touched(){
 /*
  * Aufgaben, die beim Erkennen eines Tokens ausgeführt werden sollen:
  */
-void token(){
+void token_found(){
 	stop_motor();			// Anhalten
+	token++;				// Counter hochzählen
 	beep();					// Piepen, 1s bei 220 Hz
 	wait(10000);			// 10s warten
+
 	//token counter aufrufen!!!
 
 }
@@ -504,8 +507,8 @@ void drive_to_crossroad(){
 			}
 			wait(30);
 			if (touched()) {
-				token();
 				print_string(0, 3, "Token gefunden");
+				token_found();
 			}
 
 		} else {
@@ -517,7 +520,7 @@ void drive_to_crossroad(){
 					print_string(0,1,"Kreuzung entdeckt");
 
 					junction(65);
-					beep();
+					//beep();
 					break;
 				}
 			}
