@@ -11,64 +11,257 @@
 
 #include "../h/search.h"
 #include "../h/functions.h"
+#include "../h/list.h"
+
+//int token = 0; // weg------------------------------------------------------------------------
 
 
-point start_point;
-list visit_points, n_visit_points;
+//point start_point;
 card c;
+//card visit_points;
 
-void set_inter(intersec *i,int n, int e, int s, int w) {
+
+
+int invert(int i) {
+	switch (i) {
+	case MYSOUTH: return MYNORTH;
+	case MYNORTH: return MYSOUTH;
+	case MYWEST: return MYEAST;
+	case MYEAST: return MYWEST;
+	default: return 0;
+	}
+}
+
+void set_inter(intersec *i,int n, int e, int s, int w, int opt) {
     i->North = n;
     i->East = e;
     i->South = s;
     i->West = w;
-}
-
-void print_inter(intersec *i) {
-	printf("(%i,%i,%i,%i)", i->North, i->South, i->West, i->East);
+    i->searched = opt;
 }
 
 void dechiff_intersec(intersec *i, int x) {
     switch (x) {
     case 16:
-    	set_inter(i, 1,0,0,0); break;
+    	set_inter(i, 1,0,0,0,0); break;
     case 32:
-    	set_inter(i, 0,0,1,0); break;
+    	set_inter(i, 0,0,1,0,0); break;
     case 48:
-    	set_inter(i, 1,0,1,0);break;
+    	set_inter(i, 1,0,1,0,0);break;
     case 64:
-    	set_inter(i, 0,0,0,1);break;
+    	set_inter(i, 0,0,0,1,0);break;
     case 80:
-    	set_inter(i, 1,0,0,1);break;
+    	set_inter(i, 1,0,0,1,0);break;
     case 96:
-    	set_inter(i, 0,0,1,1);break;
+    	set_inter(i, 0,0,1,1,0);break;
     case 112:
-    	set_inter(i, 1,0,1,1);break;
+    	set_inter(i, 1,0,1,1,0);break;
     case 128:
-    	set_inter(i, 0,1,0,0);break;
+    	set_inter(i, 0,1,0,0,0);break;
     case 144:
-    	set_inter(i, 1,1,0,0);break;
+    	set_inter(i, 1,1,0,0,0);break;
     case 160:
-    	set_inter(i, 0,1,1,0);break;
+    	set_inter(i, 0,1,1,0,0);break;
     case 176:
-    	set_inter(i, 1,1,1,0);break;
+    	set_inter(i, 1,1,1,0,0);break;
     case 192:
-    	set_inter(i, 0,1,0,1);break;
+    	set_inter(i, 0,1,0,1,0);break;
     case 208:
-    	set_inter(i, 1,1,0,1);break;
+    	set_inter(i, 1,1,0,1,0);break;
     case 224:
-    	set_inter(i, 0,1,1,1);break;
+    	set_inter(i, 0,1,1,1,0);break;
     case 240:
-    	set_inter(i, 1,1,1,1);break;
+    	set_inter(i, 1,1,1,1,0);break;
     case 0:
-    	set_inter(i, 0,0,0,0);break;
+    	set_inter(i, 0,0,0,0,0);break;
     case 1:
-    	set_inter(i, 0,0,0,0);break;
+    	set_inter(i, 0,0,0,0,1);break;
+    case WALL_N:
+    	set_inter(i, 0,0,0,0,0);break;
+    case WALL_S:
+        set_inter(i, 0,0,0,0,0);break;
+    case WALL_E:
+        set_inter(i, 0,0,0,0,0);break;
+    case WALL_W:
+        set_inter(i, 0,0,0,0,0);break;
     default:
-    	printf("ERROR in dechiff_inter");
+    	break;
+    	//printf("ERROR in dechiff_inter");
     }
 
 }
+
+int state_to_cross(intersec *i) {
+	return (i->North+i->West+i->East+i->South);
+}
+
+nearfield_ana max(nearfield_ana a, nearfield_ana b) {
+	if (a.count==0) return b;
+	if (b.count==0) return a;
+
+	if (a.count<b.count) return b;
+	else return a;
+}
+
+point ana_nearfield(card *c, analyzer *a) {
+	int count;
+	nearfield_ana back_value;
+	if (a->North.p.x!=-133) {
+		count = 0;
+		if (c->map[koord_to_i(a->North.p.x+1, a->North.p.y)]>0) count++;
+		if (c->map[koord_to_i(a->North.p.x-1, a->North.p.y)]>0) count++;
+		if (c->map[koord_to_i(a->North.p.x, a->North.p.y+1)]>0) count++;
+		if (c->map[koord_to_i(a->North.p.x, a->North.p.y-1)]>0) count++;
+		a->North.count = count;
+	}
+	if (a->South.p.x!=-133) {
+			count = 0;
+			if (c->map[koord_to_i(a->South.p.x+1, a->South.p.y)]>0) count++;
+			if (c->map[koord_to_i(a->South.p.x-1, a->South.p.y)]>0) count++;
+			if (c->map[koord_to_i(a->South.p.x, a->South.p.y+1)]>0) count++;
+			if (c->map[koord_to_i(a->South.p.x, a->South.p.y-1)]>0) count++;
+			a->South.count = count;
+		}
+	if (a->East.p.x!=-133) {
+			count = 0;
+			if (c->map[koord_to_i(a->East.p.x+1, a->East.p.y)]>0) count++;
+			if (c->map[koord_to_i(a->East.p.x-1, a->East.p.y)]>0) count++;
+			if (c->map[koord_to_i(a->East.p.x, a->East.p.y+1)]>0) count++;
+			if (c->map[koord_to_i(a->East.p.x, a->East.p.y-1)]>0) count++;
+			a->East.count = count;
+		}
+	if (a->West.p.x!=-133) {
+			count = 0;
+			if (c->map[koord_to_i(a->West.p.x+1, a->West.p.y)]>0) count++;
+			if (c->map[koord_to_i(a->West.p.x-1, a->West.p.y)]>0) count++;
+			if (c->map[koord_to_i(a->West.p.x, a->West.p.y+1)]>0) count++;
+			if (c->map[koord_to_i(a->West.p.x, a->West.p.y-1)]>0) count++;
+			a->West.count = count;
+		}
+	back_value = max(a->North, max(a->South, max(a->West, a->East)));
+	return back_value.p;
+
+}
+
+void init_intersec(intersec *i) {
+	i->North = 0;
+	i->South = 0;
+	i->West = 0;
+	i->East = 0;
+}
+
+int analyse_enviroment(card* c, int x, int y) {
+	int new_val = 0;
+	intersec cross_N, cross_S, cross_W, cross_E;
+	dechiff_intersec(&cross_N, c->map[koord_to_i(x,y+1)]);
+	dechiff_intersec(&cross_S, c->map[koord_to_i(x,y-1)]);
+	dechiff_intersec(&cross_E, c->map[koord_to_i(x+1,y)]);
+	dechiff_intersec(&cross_W, c->map[koord_to_i(x-1,y)]);
+	if (cross_N.South) new_val += No;
+	if (cross_S.North) new_val += So;
+	if (cross_W.East) new_val += We;
+	if (cross_E.West) new_val += Ea;
+	return new_val;
+}
+
+point calc_point_by_dir(point p, int dir){
+	switch (dir) {
+	case MYNORTH:
+		p.y++;
+		break;
+	case MYSOUTH:
+		p.y--; break;
+	case MYEAST:
+		p.x++; break;
+	case MYWEST:
+		p.x--; break;
+	}
+	return p;
+}
+
+void move_step_back(point p) {
+	int dir = invert(pop_from_logfile(&logbook));
+	point new_p = calc_point_by_dir(p, dir);
+	Robot_Move(dir);
+	dir = invert(dir);
+	Robot_Move(dir);
+	r.cur_pos = p;
+	add_to_logfile(&logbook, dir);
+
+}
+
+void matching_error(point p) {
+	//printf("Measurement failed by (%i, %i) \n", p.x, p.y);
+	move_step_back(p);
+}
+
+int move_back_to_fail(point p) {
+	int dir = invert(pop_from_logfile(&logbook));
+	point new_p = calc_point_by_dir(p, dir);
+	Robot_Move(dir);
+	set_state(&c, p.x, p.y, 0);
+	r.cur_pos = new_p;
+	return Robot_GetIntersections();
+
+}
+
+int match_enviroment(card *c,point cur_p, int state){
+	int x = cur_p.x;
+	int y = cur_p.y;
+	int counter = 0;
+	int new_intersec;
+	intersec cross_N, cross_S, cross_W, cross_E, cross_cur;
+	dechiff_intersec(&cross_cur, state);
+	if (c->map[koord_to_i(x,y+1)]>1) {
+		dechiff_intersec(&cross_N, c->map[koord_to_i(x,y+1)]);
+		if (cross_cur.North!=cross_N.South)counter++;
+	}
+	if (c->map[koord_to_i(x,y-1)]>1) {
+			dechiff_intersec(&cross_S, c->map[koord_to_i(x,y-1)]);
+			if (cross_cur.South!=cross_S.North)counter++;
+		}
+	if (c->map[koord_to_i(x+1,y)]>1) {
+			dechiff_intersec(&cross_E, c->map[koord_to_i(x+1,y)]);
+			if (cross_cur.East!=cross_E.West)counter++;
+		}
+	if (c->map[koord_to_i(x-1,y)]>1) {
+			dechiff_intersec(&cross_W, c->map[koord_to_i(x-1,y)]);
+			if (cross_cur.West!=cross_W.East) counter++;
+		}
+
+	if (counter){
+		//matching_error(cur_p);
+		new_intersec = Robot_GetIntersections();
+		/* if (new_intersec == state) {
+			//printf("This was not enough\n");
+			while ((new_intersec == c->map[koord_to_i(r.cur_pos.x, r.cur_pos.y)])||c->map[koord_to_i(r.cur_pos.x, r.cur_pos.y)]==0) {
+				new_intersec = move_back_to_fail(cur_p);
+			}
+			//set_global_enviroment(c);
+			//printf("fail was at (%i, %i) \n", r.cur_pos.x, r.cur_pos.y);
+			//print_card(c);
+		}
+	*/
+		return new_intersec;
+	}
+	else {
+		return state;
+	}
+}
+
+void set_hypothesis(card *c) {
+	int x,y, new_val;
+	for (x=-hcol;x<hcol;x++) {
+		for (y=-hrow;y<hrow;y++) {
+			if (c->map[koord_to_i(x,y)] == 1){
+				new_val = analyse_enviroment(c, x, y);
+				c->map[koord_to_i(x,y)] = new_val;
+			}
+		}
+	}
+
+}
+
 
 int allowed_way(int opt, int code) {
 	int erg = 0;
@@ -76,241 +269,230 @@ int allowed_way(int opt, int code) {
 	dechiff_intersec(&i, code);
 	switch (opt) {
 	case MYSOUTH:
-		//if((code==NESW)||(code==NSW)||(code==ESW)||(code==NES)||(code==So)||(code==ES)||(code==SW)||(code==NS)) erg = 1;
 		return i.South;
 		break;
 	case MYNORTH:
-		//if ((code==NESW)||(code==NES)||(code==NSW)||(code==NEW)||(code==NE)||(code==NS)||(code==NW)||(code==No)) erg = 1;
 		return i.North;
 		break;
 	case MYWEST:
-		//if ((code==NESW)||(code==ESW)||(code==NSW)||(code==NEW)||(code==SW)||(code==EW)||(code==NW)||(code==We)) erg = 1;
 		return i.West;
 		break;
 	case MYEAST:
-		//if ((code==NESW)||(code==ESW)||(code==NEW)||(code==NES)||(code==NE)||(code==ES)||(code==EW)||(code==Ea)) erg = 1;
 		return i.East;
 		break;
 	default:
-		printf("ERROR in allowed_way");
+		break;
+		//printf("ERROR in allowed_way");
 	}
 	return erg;
 }
 
-void select_direction(robot *r, intersec i) {
-	print_inter(&i);
-	switch (r->sel_dir) {
-	case MYNORTH:
-		if (i.East) r->sel_dir = MYEAST;
-		if (i.West) r->sel_dir = MYWEST;
-		if (i.North) r->sel_dir = MYNORTH;
-		if ((!i.East)&&(!i.West)&&(!i.North)) r->sel_dir = MYBREAK;
-		break;
-	case MYWEST:
-		if (i.West) r->sel_dir = MYWEST;
-		if (i.South) r->sel_dir = MYSOUTH;
-		if (i.North) r->sel_dir = MYNORTH;
-		if ((!i.East)&&(!i.South)&&(!i.North)) r->sel_dir = MYBREAK;
-		break;
-	case MYSOUTH:
-		if (i.East) r->sel_dir = MYEAST;
-		if (i.West) r->sel_dir = MYWEST;
-		if (i.South) r->sel_dir = MYSOUTH;
-		if ((!i.East)&&(!i.West)&&(!i.South)) r->sel_dir = MYBREAK;
-		break;
-	case MYEAST:
-		if (i.East) r->sel_dir = MYEAST;
-		if (i.South) r->sel_dir = MYSOUTH;
-		if (i.North) r->sel_dir = MYNORTH;
-		if ((!i.East)&&(!i.South)&&(!i.North)) r->sel_dir = MYBREAK;
-		break;
-	default:
-		printf("ERROR in select_direction");
-	}
+int calc_dir_by_points(point p1, point p2) {
+	if (p1.x<p2.x) return MYEAST;
+	if (p1.x>p2.x) return MYWEST;
+	if (p1.y<p2.y) return MYNORTH;
+	if (p1.y>p2.y) return MYSOUTH;
+	return 0;
+
 }
 
-point new_point(point p, int orient) {
-    switch (orient) {
-    case MYNORTH:
-        p.y++; break;
-    case MYSOUTH:
-        p.y--; break;
-    case MYWEST:
-        p.x--; break;
-    case MYEAST:
-        p.x++; break;
-    case MYBREAK:
-    	break;
-    default:
-        printf("ERROR in clac_point");
-    }
-    return p;
-}
-
-point get_next_point(point p, card *c,int *dir) {
+point get_next_point(point p, card *c, int* dir) {
 	point new_p;
+	point cur_p = p;
+	analyzer a;
+	*dir =0;
+	init_analyzer(&a);
 	if ((get_state(c, p.x, p.y-1)==1)&&allowed_way(MYSOUTH, c->map[koord_to_i(p.x, p.y)])){
 		new_p.x = p.x;
 		new_p.y = p.y-1;
-		*dir = MYSOUTH;
-		return new_p;
+		set_nearfield_ana(&a, new_p, MYSOUTH);
 	}
 	if ((get_state(c, p.x, p.y+1)==1)&&allowed_way(MYNORTH, c->map[koord_to_i(p.x, p.y)])){
 			new_p.x = p.x;
 			new_p.y = p.y+1;
-			*dir = MYNORTH;
-			return new_p;
+			set_nearfield_ana(&a, new_p, MYNORTH);
 		}
 	if ((get_state(c, p.x-1, p.y)==1)&&allowed_way(MYWEST, c->map[koord_to_i(p.x, p.y)])){
 			new_p.x = p.x-1;
 			new_p.y = p.y;
-			*dir = MYWEST;
-			return new_p;
+			set_nearfield_ana(&a, new_p, MYWEST);
 		}
 	if ((get_state(c, p.x+1, p.y)==1)&&allowed_way(MYEAST, c->map[koord_to_i(p.x, p.y)])){
 			new_p.x = p.x+1;
 			new_p.y = p.y;
-			*dir = MYEAST;
-			return new_p;
+			set_nearfield_ana(&a, new_p, MYEAST);
 		}
+	if (a.active){
+		p = ana_nearfield(c, &a);
+		*dir = calc_dir_by_points(cur_p, p);
+	}
 	return p;
 }
 
-int get_orient_of_next_point(point p, card *c) {
-	if ((get_state(c, p.x, p.y-1)==1)&&allowed_way(MYSOUTH, c->map[koord_to_i(p.x, p.y)])){
-		return MYSOUTH;
-	}
-	if ((get_state(c, p.x, p.y+1)==1)&&allowed_way(MYNORTH, c->map[koord_to_i(p.x, p.y)])){
-			return MYNORTH;
-		}
-	if ((get_state(c, p.x-1, p.y)==1)&&allowed_way(MYWEST, c->map[koord_to_i(p.x, p.y)])){
-			return MYWEST;
-		}
-	if ((get_state(c, p.x+1, p.y)==1)&&allowed_way(MYEAST, c->map[koord_to_i(p.x, p.y)])){
-			return MYEAST;
-		}
-	return MYBREAK;
+/*int rob_mv(int x, int y) {
+	int erg;
+	//visit_points.map[koord_to_i(x,y)]--;
+Robot_Move(x, y);
+	return erg;
 }
-
-
-void get_nearest_unknown(point p, card *k, int or, point *output) {
-	point new_p = p;
-	int i;
-	if (comp_p(get_next_point(p,k,i),p)) {
-		intersec opt;
-		dechiff_intersec(&opt, k->map[koord_to_i(p.x, p.y)]);
-		if ((opt.East==1)&&(or!=MYWEST)) {
-			new_p.x++;
-			get_nearest_unknown(new_p, k, MYEAST, output);
-		}
-		if ((opt.West==1)&&(or!=MYEAST)) {
-					new_p.x--;
-					get_nearest_unknown(new_p, k, MYWEST, output);
-				}
-		if ((opt.North==1)&&(or!=MYSOUTH)) {
-					new_p.y++;
-					get_nearest_unknown(new_p, k, MYNORTH, output);
-				}
-		if ((opt.South)&&(or!=MYNORTH)) {
-					new_p.y--;
-					get_nearest_unknown(new_p, k, MYSOUTH, output);
-				}
-	}
-	else {
-		output->x = new_p.x;
-		output->y = new_p.y;
-	}
-}
-
+*/
 void move_robot(robot *r) {
 	point cur_p = r->cur_pos;
-	int dir;
-	//point new_p = new_point(cur_p, r->sel_dir);
+	int dir, tok;
 	point new_p = get_next_point(r->cur_pos, &c, &dir);
 	if (comp_p(cur_p, new_p)) {
 		r->sel_dir = MYBREAK;
 		return;
 	}
-	Robot_Move(dir);
-	//printf("Move to %i \n", get_orient_of_next_point(cur_p, &c));
+	Robot_Move(dir);  //dir
+	add_to_logfile(&logbook, dir);
 	r->cur_pos = new_p;
 }
 
-point calc_point_form_orient(point p, int orient) {
-	switch (orient) {
-	case MYNORTH:
-		p.y++;
-		break;
-	case MYSOUTH:
-		p.y--;
-		break;
-	case MYWEST:
-		p.x++;
-		break;
-	case MYEAST:
-		p.x--;
-		break;
-	default:
-		break;
+void move_rek(list_elem l) { //rekursives bewegen mittels BSF-Tree
+	if (l->parent->parent!=NULL) move_rek(l->parent);
+	add_to_logfile(&logbook, invert(l->in));
+	Robot_Move(invert(l->in));
+	return;
+}
+
+point get_local_nearest_point(point in_p, card *c, int s) {
+	int search_for = s;
+	int breaker = 0;
+	queue q;
+	list_elem new_elem, cur_elem;
+	point p, new_p;
+	intersec cross;
+	p.x = -133; p.y=-133;
+	init_queue(&q, in_p);
+	if ((!exists_unkown(c)) && (token!=TOKEN)) {
+		//token = TOKEN;
+		p.x = 0; p.y=0;
+		c->map[START] = search_for;
+		return p;
 	}
+	while (breaker != search_for) {
+		cur_elem = get_front(&q);
+		p = cur_elem->p;
+		breaker = c->map[koord_to_i(p.x, p.y)];
+		if (breaker == search_for ) {
+			q.found_elem  = cur_elem;
+			pop_queue(&q);
+			break;
+		}
+		dechiff_intersec(&cross, breaker);
+		if((cross.North)&&(cur_elem->in!=MYNORTH)) {
+			new_p = cur_elem->p;
+			new_p.y++;
+			new_elem = make_follower(MYSOUTH, new_p, cur_elem);
+			push_queue(&q, new_elem);
+		}
+		if ((cross.South)&&(cur_elem->in!=MYSOUTH)) {
+			new_p = cur_elem->p;
+			new_p.y--;
+			new_elem = make_follower(MYNORTH, new_p, cur_elem);
+			push_queue(&q, new_elem);
+			}
+		if ((cross.West)&&(cur_elem->in!=MYWEST)) {
+			new_p = cur_elem->p;
+			new_p.x--;
+			new_elem = make_follower(MYEAST, new_p, cur_elem);
+			push_queue(&q, new_elem);
+		}
+		if ((cross.East)&&(cur_elem->in!=MYEAST)) {
+			new_p = cur_elem->p;
+			new_p.x++;
+			new_elem = make_follower(MYWEST, new_p, cur_elem);
+			push_queue(&q, new_elem);
+		}
+		pop_queue(&q);
+	}
+	move_rek(q.found_elem);
+	delete_queue(&q);
 	return p;
 }
 
-/*
-void run_robot(robot *r) {
 
-	intersec cur_inter;
-	point cur_p = r->cur_pos;
-	dechiff_intersec(&cur_inter);
-	insert_l(&visit_points, cur_p, cur_inter);
-	select_direction(r, cur_inter);
-	move_robot(r);
-	if (r->no_cross) return;
-	if (!exist_list(&visit_points, r->cur_pos))
-		run_robot(r);
-	print_card(&c);
+int analyse_never_exist(card* c, int x, int y) {
+	int new_val = 0;
+	intersec cross_N, cross_S, cross_W, cross_E;
+	if (c->map[koord_to_i(x,y+1)]>1) {
+		dechiff_intersec(&cross_N, c->map[koord_to_i(x,y+1)]);
+		if (!cross_N.South) new_val += No;
+	}
+	if (c->map[koord_to_i(x,y-1)]>1) {
+		dechiff_intersec(&cross_S, c->map[koord_to_i(x,y-1)]);
+		if (!cross_S.North) new_val += So;
+	}
+	if (c->map[koord_to_i(x+1,y)]>1) {
+		dechiff_intersec(&cross_E, c->map[koord_to_i(x+1,y)]);
+		if (!cross_E.West) new_val += Ea;
+	}
+	if (c->map[koord_to_i(x-1,y)]>1) {
+		dechiff_intersec(&cross_W, c->map[koord_to_i(x-1,y)]);
+		if (!cross_W.East) new_val += We;
+	}
+	return new_val;
 }
-*/
+
 
 void run_by_card(robot *r) {
-	point return_p;
-	int state = Robot_GetIntersections();
+	//point return_p, test_p; test_p.x = 0; test_p.y = -4;
+	int state, new_val1, new_val2;
+	//new_val1  = analyse_enviroment(&c, r->cur_pos.x, r->cur_pos.y);
+	//new_val2  = analyse_never_exist(&c, r->cur_pos.x, r->cur_pos.y);
+	//new_val1 += new_val2;
+	state       = get_intersec(0);
+	//state    -= new_val2;
 	intersec in;
+	state     = match_enviroment(&c, r->cur_pos, state);
 	dechiff_intersec(&in, state);
+
 	set_state(&c, r->cur_pos.x, r->cur_pos.y, state);
+	//set_state(&visit_points, r->cur_pos.x, r->cur_pos.y, state_to_cross(&in));
 	set_local_envoriment(&c, r->cur_pos.x, r->cur_pos.y);
-	//select_direction(r, in);
 	move_robot(r);
-	/*if (r->sel_dir==MYBREAK) {
-		print_card(&c);
-		r->sel_dir = 2;
-		get_nearest_unknown(r->cur_pos, &c, MYBREAK, &return_p);
-		r->cur_pos= return_p;
-		Robot_Move(get_orient_of_next_point(return_p, &c));
-	}
-	run_by_card(r);
-*/
+
 }
-
-
 
 void runbot(robot *r) {
 	point return_p;
-	while (1) {
-
+	int state, exit_1 = 0;
+	intersec in;
+	init_card(&c);
+	while (token != TOKEN) {
+		update_border(&c, r->cur_pos);
 		run_by_card(r);
+
 		if (r->sel_dir==MYBREAK) {
-				//print_card(&c);
-		/*		r->sel_dir = 2;
-				get_nearest_unknown(r->cur_pos, &c, MYBREAK, &return_p);
+				r->sel_dir = 2;
+				return_p = get_local_nearest_point(r->cur_pos, &c, 1);
 				r->cur_pos= return_p;
-				//Robot_Move(get_orient_of_next_point(return_p, &c));
-				return;  */
-		while(1){
-			beep();
-		}
+				if ((r->cur_pos.x==0)&&(r->cur_pos.y==0)){
+					beep();
+					token = TOKEN;
+					exit_1 = 1;
+				}
+
 			}
 	}
 
+	if (!exit_1) {
+		state = get_intersec(0);
+		dechiff_intersec(&in, state);
+		set_state(&c, r->cur_pos.x, r->cur_pos.y, state);
+		//set_state(&visit_points, r->cur_pos.x, r->cur_pos.y, state_to_cross(&in));
+		set_local_envoriment(&c, r->cur_pos.x, r->cur_pos.y);
+		set_hypothesis(&c);
+		set_unkown_to_void(&c);
+		get_local_nearest_point(r->cur_pos, &c, 5050);
+
+	}
+
+	delete_logfile(&logbook);
+	//printf("EXIT SUCCESS");
+
 
 }
+
+

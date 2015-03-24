@@ -11,24 +11,81 @@
 #include "../h/list.h"
 #include "../src/list.c"
 
+// Start des Hauptprogramms
 
 TASK( OSEK_Main_Task) {
 	init();			// Initialisierung des Roboters
 
-	while(0){
-		print_int(0,0,ecrobot_get_light_sensor(NXT_PORT_S3));
-		wait(10);
-		display_clear;
-	}
 
-	robot r;
+
+
+
+	/*if(explorate_orientation(64)){
+		wait(1000);
+		turn_east();
+	}
+	wait(1000);
+*/
+	int help;
+	//turn_east();
+	//help = explorate_orientation(NE);
+	//wait(10000);
+
+	init_logfile(&logbook);
 	set_robot(&r);
 	runbot(&r);		//Start des Suchprogramms
+
+	beep();
+	wait(1000);
+
+	// lustiges Piepen
+
+
+
+
 	while(1){
-		beep();
+		int i = 0;
+		for (i=0; i<20;i++){
+			print_int(0,0,i*10);
+			ecrobot_sound_tone(10*i, 100, 100);
+			wait(100);
+		}
+		for (i=20; i>0;i--){
+			print_int(0,0,i*10);
+			ecrobot_sound_tone(10*i, 100, 100);
+			wait(100);
+		}
+
+		for (i=0; i<20;i++){
+			print_int(0,0,i*10);
+			ecrobot_sound_tone(100*i, 100, 10);
+			wait(100);
+		}
+		for (i=20; i>0;i--){
+			print_int(0,0,i*10);
+			ecrobot_sound_tone(100*i, 100, 10);
+			wait(100);
+		}
+		for (i=0; i<20;i++){
+			print_int(0,0,i*10);
+			ecrobot_sound_tone(1000*i, 100, 10);
+			wait(100);
+		}
+		for (i=20; i>0;i--){
+			print_int(0,0,i*10);
+			ecrobot_sound_tone(1000*i, 100, 10);
+			wait(100);
+			}
 	}
 }
-
-
+/*
+// Notfallprogramm
+TASK(OSEK_Task_Background) {
+	  while(1){
+		beep();
+		systick_wait_ms(500);
+	  }
+}
+*/
 
 
