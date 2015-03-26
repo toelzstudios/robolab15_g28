@@ -10,7 +10,7 @@
 
 
 #include "../h/search.h"
-#include "../h/functions.h"
+#include "../h/rob_strg.h"
 #include "../h/list.h"
 
 //int token = 0; // weg------------------------------------------------------------------------
@@ -201,7 +201,7 @@ int move_back_to_fail(point p) {
 	Robot_Move(dir);
 	set_state(&c, p.x, p.y, 0);
 	r.cur_pos = new_p;
-	return Robot_GetIntersections();
+	return Robot_GetIntersections(240,0);
 
 }
 
@@ -231,7 +231,7 @@ int match_enviroment(card *c,point cur_p, int state){
 
 	if (counter){
 		//matching_error(cur_p);
-		new_intersec = Robot_GetIntersections();
+		new_intersec = Robot_GetIntersections(240,0);
 		/* if (new_intersec == state) {
 			//printf("This was not enough\n");
 			while ((new_intersec == c->map[koord_to_i(r.cur_pos.x, r.cur_pos.y)])||c->map[koord_to_i(r.cur_pos.x, r.cur_pos.y)]==0) {
@@ -364,13 +364,17 @@ point get_local_nearest_point(point in_p, card *c, int s) {
 	point p, new_p;
 	intersec cross;
 	p.x = -133; p.y=-133;
+
 	init_queue(&q, in_p);
+
 	if ((!exists_unkown(c)) && (token!=TOKEN)) {
 		//token = TOKEN;
 		p.x = 0; p.y=0;
 		c->map[START] = search_for;
+		delete_queue(&q);
 		return p;
 	}
+
 	while (breaker != search_for) {
 		cur_elem = get_front(&q);
 		p = cur_elem->p;
@@ -409,6 +413,7 @@ point get_local_nearest_point(point in_p, card *c, int s) {
 	}
 	move_rek(q.found_elem);
 	delete_queue(&q);
+
 	return p;
 }
 
@@ -437,28 +442,27 @@ int analyse_never_exist(card* c, int x, int y) {
 
 
 void run_by_card(robot *r) {
-	//point return_p, test_p; test_p.x = 0; test_p.y = -4;
 	int state, new_val1, new_val2;
-	//new_val1  = analyse_enviroment(&c, r->cur_pos.x, r->cur_pos.y);
-	//new_val2  = analyse_never_exist(&c, r->cur_pos.x, r->cur_pos.y);
-	//new_val1 += new_val2;
-	state       = get_intersec(0);
-	//state    -= new_val2;
 	intersec in;
-	state     = match_enviroment(&c, r->cur_pos, state);
-	dechiff_intersec(&in, state);
 
+	new_val1  = analyse_enviroment(&c, r->cur_pos.x, r->cur_pos.y);
+	new_val2  = analyse_never_exist(&c, r->cur_pos.x, r->cur_pos.y);
+	new_val1 += new_val2;
+	state     = Robot_GetIntersections(new_val1, new_val2);
+	state    -= new_val2;
+//	state     = match_enviroment(&c, r->cur_pos, state);
+
+	dechiff_intersec(&in, state);
 	set_state(&c, r->cur_pos.x, r->cur_pos.y, state);
-	//set_state(&visit_points, r->cur_pos.x, r->cur_pos.y, state_to_cross(&in));
 	set_local_envoriment(&c, r->cur_pos.x, r->cur_pos.y);
 	move_robot(r);
-
 }
 
 void runbot(robot *r) {
 	point return_p;
 	int state, exit_1 = 0;
 	intersec in;
+
 	init_card(&c);
 	while (token != TOKEN) {
 		update_border(&c, r->cur_pos);
@@ -478,18 +482,25 @@ void runbot(robot *r) {
 	}
 
 	if (!exit_1) {
-		state = get_intersec(0);
+		state = Robot_GetIntersections(0, 0);
+
 		dechiff_intersec(&in, state);
+
 		set_state(&c, r->cur_pos.x, r->cur_pos.y, state);
-		//set_state(&visit_points, r->cur_pos.x, r->cur_pos.y, state_to_cross(&in));
+
 		set_local_envoriment(&c, r->cur_pos.x, r->cur_pos.y);
+
 		set_hypothesis(&c);
+
 		set_unkown_to_void(&c);
-		get_local_nearest_point(r->cur_pos, &c, 5050);
+
+		return_p = get_local_nearest_point(r->cur_pos, &c, 5050);
+
+
 
 	}
 
-	delete_logfile(&logbook);
+	//delete_logfile(&logbook);
 	//printf("EXIT SUCCESS");
 
 

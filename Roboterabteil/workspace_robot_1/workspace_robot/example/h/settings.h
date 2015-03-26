@@ -36,8 +36,15 @@
 #define WALL_S 1001
 #define WALL_E 1002
 #define WALL_W 1003
-#define SIZEX 7
-#define SIZEY 8
+#define SIZEX 7	//7
+#define SIZEY 7//8
+
+#define SPEED 50
+
+const int winkelconst   = 180;
+const int speedconst    = 40; // 65
+const int junctionspeed = 60;
+int token = 0;
 
 
 

@@ -26,30 +26,13 @@ int koord_to_i(int x, int y) {
 	i = y*COL + x;
 	return i;
 }
-void print_row(card* c, int row) {
-	int begin = COL*row;
-	int index;
-	if (row > ROW) {
-		printf("ERROR row over limit");
-		return;
-	}
-	for (index=begin; index<begin+COL; index++) {
-		printf(" %i", c->map[index]);
-	}
-}
-void print_card(card *c) {
-	int i = 0;
-	for (i;i<ROW;i++) {
-		print_row(c, i);
-		printf("\n");
-	}
-}
 
 void init_card(card *c) {
 	int i;
 	for (i=0;i<ROW*COL;i++) {
 		c->map[i] = 0;
 	}
+
 	c->map[START] = 1;
 	c->cur_pos = START;
 	c->cur_e = 0;
@@ -111,7 +94,7 @@ void set_unkown_to_void(card *c) {
 
 void set_h_wall(card* c, int y, int opt) {
 	int i;
-	int wall_opt;
+	int wall_opt = 0;
 	if (opt==MYNORTH) wall_opt = WALL_N;
 	if (opt==MYSOUTH) wall_opt = WALL_S;
 	for (i=-hcol;i<=hcol;i++) {
@@ -122,7 +105,7 @@ void set_h_wall(card* c, int y, int opt) {
 
 void set_v_wall(card* c, int x, int opt) {
 	int i;
-	int wall_opt;
+	int wall_opt = 0;
 	if (opt==MYEAST) wall_opt = WALL_E;
 	if (opt==MYWEST) wall_opt = WALL_W;
 	for (i=-hrow;i<=hrow;i++) {

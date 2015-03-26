@@ -25,6 +25,7 @@ typedef struct intersec {
 typedef struct robot {
 	point cur_pos;
 	int sel_dir, no_cross;
+	int orient;
 } robot;
 
 typedef struct l_elem *list_elem;
